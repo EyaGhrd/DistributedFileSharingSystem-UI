@@ -13,6 +13,8 @@ import {WebSocketService} from "../socket/web-socket.service";
 export class AppComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   private messagesSubscription: Subscription = EMPTY.subscribe();
+  files: any[] = [{name: 'Sample.pdf'}, {name: 'Example.txt'}]; // Example files
+  selectedFile: any;
 
   constructor(private webSocketService: WebSocketService) {}
 
@@ -26,5 +28,16 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.messagesSubscription.unsubscribe();
     this.webSocketService.closeConnection();
+  }
+
+  selectFile(file: any): void {
+    this.selectedFile = file;
+  }
+
+  downloadFile(): void {
+    if (this.selectedFile) {
+      console.log('Downloading:', this.selectedFile.name);
+      // Implement file download logic here
+    }
   }
 }

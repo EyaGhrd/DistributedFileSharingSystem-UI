@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="app.component.css">
-</head>
-<body>
-<div *ngIf="messages.length > 0">
-  <table>
-<!--    <thead>-->
-<!--    <tr>-->
-<!--      <th>Peer ID</th>-->
-<!--      <th>Addresses</th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-    <tbody>
-    <div *ngIf="messages">
-      <table>
-        <tr *ngFor="let message of messages">
-          <td>{{ message}}</td>
-        </tr>
-      </table>
-    </div>
-
-    </tbody>
-  </table>
+<div class="toolbar">
+  <h1>Distributed File Sharing System</h1>
 </div>
-<!--<ng-template #noPeers>-->
-<!--  <p>No peers found.</p>-->
-<!--</ng-template>-->
-</body>
+
+<div class="container">
+  <div class="panel">
+    <h2>Discovered Peers</h2>
+    <ul>
+      <li *ngFor="let peer of messages">
+        Peer ID: {{peer}}
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>Available Files</h2>
+    <ul>
+      <li *ngFor="let file of files" (click)="selectFile(file)" [class.selected]="file === selectedFile">
+        {{ file.name }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel actions">
+    <h2>File Operations</h2>
+    <p *ngIf="selectedFile">Selected File: {{ selectedFile.name }}</p>
+    <button (click)="downloadFile()" [disabled]="!selectedFile">Download Selected File</button>
+  </div>
+</div>
 </html>

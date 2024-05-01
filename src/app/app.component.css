@@ -1,0 +1,67 @@
+.toolbar {
+  background-color: #007BFF;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.panel {
+  border: 1px solid #ddd;
+  padding: 10px;
+  flex: 1;
+  margin: 10px;
+  min-width: 250px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+li {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  word-break: break-word;
+}
+
+li:hover {
+  background-color: #f8f9fa;
+}
+
+li.selected {
+  background-color: #007BFF;
+  color: white;
+}
+
+.actions {
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[disabled] {
+  background-color: #ccc;
+}
