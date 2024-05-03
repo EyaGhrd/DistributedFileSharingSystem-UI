@@ -7,7 +7,7 @@ import {webSocket} from "rxjs/webSocket";
   providedIn: 'root'
 })
 export class WebSocketService {
-  private socket$: WebSocketSubject<any>;
+  private socket$: WebSocketSubject<PeerMessage>;
   private messagesSubject = new Subject<any>();
   public messages$ = this.messagesSubject.asObservable().pipe(share());
 
@@ -19,9 +19,41 @@ export class WebSocketService {
   private createWebSocket(): WebSocketSubject<any> {
     return webSocket({
       url: 'ws://localhost:8081/ws',
-      deserializer: msg => msg.data
+      deserializer: msg => this.parseMessage(msg.data)
     });
   }
+
+  private parseMessage(data: string): PeerMessage | null {
+    const regex = /Status: (\w+), Peer ID: ([\w\d]+), Addresses: (\[.*?\])/;
+    const matches = regex.exec(data);
+    if (matches && matches.length === 4) {
+      const status = matches[1];
+      const peerId = matches[2];
+      const addressesString = matches[3];
+
+      // Parse addresses manually
+      const addresses = this.parseAddresses(addressesString);
+
+      return { status, peerId, addresses };
+    }
+    return null;
+  }
+
+  private parseAddresses(addressesString: string): string[] {
+    // Remove the surrounding brackets and split by space
+    return addressesString.replace(/[\[\]]/g, '').split(' ');
+  }
+
+
+  private extractAddresses(addressesString: string): string[] {
+    // Remove the surrounding brackets
+    addressesString = addressesString.substring(1, addressesString.length - 1);
+
+    // Split by comma and trim spaces
+    return addressesString.split(/\s*,\s*/);
+  }
+
+
 
   private listenMessages(): void {
     this.socket$.subscribe(
@@ -52,4 +84,9 @@ export class WebSocketService {
   public closeConnection(): void {
     this.socket$.complete();
   }
+}
+interface PeerMessage {
+  status: string;
+  peerId: string;
+  addresses: string[];
 }

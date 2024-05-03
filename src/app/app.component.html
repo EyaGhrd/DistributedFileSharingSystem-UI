@@ -8,12 +8,19 @@
   <div class="panel">
     <h2>Discovered Peers</h2>
     <ul>
-      <li *ngFor="let peer of messages">
-        Peer ID: {{peer}}
+      <li *ngFor="let peer of discoveredPeers">
+        Peer ID: {{peer.peerId}}, Addresses: {{peer.addresses.join(', ')}}
       </li>
     </ul>
   </div>
-
+  <div class="panel">
+    <h2>Connected Peers</h2>
+    <ul>
+      <li *ngFor="let peer of connectedPeers">
+        Peer ID: {{peer.peerId}}, Addresses: {{peer.addresses.join(', ')}}
+      </li>
+    </ul>
+  </div>
   <div class="panel">
     <h2>Available Files</h2>
     <ul>
