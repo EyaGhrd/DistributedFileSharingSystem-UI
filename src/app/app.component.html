@@ -33,7 +33,7 @@
   <div class="panel actions">
     <h2>File Operations</h2>
     <p *ngIf="selectedFile">Selected File: {{ selectedFile.name }}</p>
-    <button (click)="downloadFile()" [disabled]="!selectedFile">Download Selected File</button>
+    <button (click)="sendFileName()" [disabled]="!selectedFile">Send Selected File</button>
   </div>
 </div>
 </html>

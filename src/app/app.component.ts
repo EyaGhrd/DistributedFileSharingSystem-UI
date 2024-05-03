@@ -4,11 +4,12 @@ import {catchError, EMPTY, Observable, of, Subscription, switchMap, timer} from 
 import { CommonModule } from '@angular/common';
 import {WebSocketService} from "../socket/web-socket.service";
 import {FileTransferService} from "../fileTransfer/file-transfer.service";
+import {FileSendService} from "../fileSend/file-send.service";
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [HttpClientModule,CommonModule],
-  providers:[HttpClientModule,FileTransferService,WebSocketService],
+  providers:[HttpClientModule,FileTransferService,WebSocketService,FileSendService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -21,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
   discoveredPeers: PeerMessage[] = [];
   connectedPeers: PeerMessage[] = [];
 
-  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService) {}
+  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService, private fileSendService: FileSendService) {}
 
   ngOnInit(): void {
     this.messagesSubscription = this.webSocketService.messages$.subscribe(
@@ -38,6 +39,10 @@ export class AppComponent implements OnInit, OnDestroy {
       files => {
         this.files = files.map(filename => ({ name: filename }));
       },
+      error => console.error('Error fetching files:', error)
+    );
+    this.fileSubscription = this.fileTransferService.getFiles().subscribe(
+      files => this.files = files.map(filename => ({ name: filename })),
       error => console.error('Error fetching files:', error)
     );
   }
@@ -75,7 +80,25 @@ export class AppComponent implements OnInit, OnDestroy {
       // Implement file download logic here
     }
   }
+  sendFileName(): void {
+    if (this.selectedFile) {
+      this.fileSendService.requestFile(this.selectedFile.name).subscribe({
+        next: response => {
+          console.log('File name sent successfully', response);
+          alert('File name sent successfully: ' + this.selectedFile.name);
+        },
+        error: err => {
+          console.error('Error sending file name:', err);
+          alert('Error sending file name: ' + err.message);
+        }
+      });
+    } else {
+      alert('No file selected');
+    }
+  }
+
 }
+
 interface PeerMessage {
   status: string;
   peerId: string;
