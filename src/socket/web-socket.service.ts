@@ -18,7 +18,7 @@ export class WebSocketService {
 
   private createWebSocket(): WebSocketSubject<any> {
     return webSocket({
-      url: 'ws://localhost:8081/ws',
+      url: 'ws://localhost:8082/ws',
       deserializer: msg => this.parseMessage(msg.data)
     });
   }

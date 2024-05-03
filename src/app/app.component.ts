@@ -3,23 +3,25 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {catchError, EMPTY, Observable, of, Subscription, switchMap, timer} from "rxjs";
 import { CommonModule } from '@angular/common';
 import {WebSocketService} from "../socket/web-socket.service";
+import {FileTransferService} from "../fileTransfer/file-transfer.service";
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [HttpClientModule,CommonModule],
+  providers:[HttpClientModule,FileTransferService,WebSocketService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  messages: any[] = [];
   private messagesSubscription: Subscription = EMPTY.subscribe();
-  files: any[] = [{name: 'Sample.pdf'}, {name: 'Example.txt'}]; // Example files
+  private fileSubscription: Subscription = EMPTY.subscribe();  // Subscription to manage file data
+  files: any[] = [];
   selectedFile: any;
 
   discoveredPeers: PeerMessage[] = [];
   connectedPeers: PeerMessage[] = [];
 
-  constructor(private webSocketService: WebSocketService) {}
+  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService) {}
 
   ngOnInit(): void {
     this.messagesSubscription = this.webSocketService.messages$.subscribe(
@@ -31,6 +33,12 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       },
       error => console.error('Error receiving messages:', error)
+    );
+    this.fileSubscription = this.fileTransferService.getFiles().subscribe(
+      files => {
+        this.files = files.map(filename => ({ name: filename }));
+      },
+      error => console.error('Error fetching files:', error)
     );
   }
 
@@ -52,6 +60,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.messagesSubscription.unsubscribe();
+    if (this.fileSubscription) {
+      this.fileSubscription.unsubscribe();  // Ensure to unsubscribe to avoid memory leaks
+    }
   }
 
   selectFile(file: any): void {
