@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import {WebSocketService} from "../socket/web-socket.service";
 import {FileTransferService} from "../fileTransfer/file-transfer.service";
 import {FileSendService} from "../fileSend/file-send.service";
+import {HostService} from "../hostService/host.service";
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [HttpClientModule,CommonModule],
-  providers:[HttpClientModule,FileTransferService,WebSocketService,FileSendService],
+  providers:[HttpClientModule,FileTransferService,WebSocketService,FileSendService,HostService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -18,11 +19,12 @@ export class AppComponent implements OnInit, OnDestroy {
   private fileSubscription: Subscription = EMPTY.subscribe();  // Subscription to manage file data
   files: any[] = [];
   selectedFile: any;
+  hostID: string='';
 
   discoveredPeers: PeerMessage[] = [];
   connectedPeers: PeerMessage[] = [];
 
-  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService, private fileSendService: FileSendService) {}
+  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService, private fileSendService: FileSendService,private hostService :HostService) {}
 
   ngOnInit(): void {
     this.messagesSubscription = this.webSocketService.messages$.subscribe(
@@ -45,6 +47,11 @@ export class AppComponent implements OnInit, OnDestroy {
       files => this.files = files.map(filename => ({ name: filename })),
       error => console.error('Error fetching files:', error)
     );
+    this.hostService.getHostID().subscribe({
+      next: (data) => this.hostID = data.hostID,
+      error: (err) => console.error('Failed to fetch host ID', err)
+    });
+    console.log('Host:', this.hostID);
   }
 
   private updateDiscoveredPeers(peer: PeerMessage): void {

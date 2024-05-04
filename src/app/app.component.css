@@ -3,6 +3,15 @@
   color: white;
   padding: 10px 20px;
   text-align: center;
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+}
+
+.host-id {
+  font-size: 1em;
+  color: #FFF; /* Make sure the color is visible against the toolbar */
+  margin-left: 20px; /* Optional: Adds spacing between title and host ID */
 }
 
 .container {
