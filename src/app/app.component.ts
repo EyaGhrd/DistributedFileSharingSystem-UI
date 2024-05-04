@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {catchError, EMPTY, Observable, of, Subscription, switchMap, timer} from "rxjs";
+import {HttpClientModule} from '@angular/common/http';
+import {EMPTY, Subscription} from "rxjs";
 import { CommonModule } from '@angular/common';
 import {WebSocketService} from "../socket/web-socket.service";
 import {FileTransferService} from "../fileTransfer/file-transfer.service";
@@ -16,7 +16,7 @@ import {HostService} from "../hostService/host.service";
 })
 export class AppComponent implements OnInit, OnDestroy {
   private messagesSubscription: Subscription = EMPTY.subscribe();
-  private fileSubscription: Subscription = EMPTY.subscribe();  // Subscription to manage file data
+  private fileSubscription: Subscription = EMPTY.subscribe();
   files: any[] = [];
   selectedFile: any;
   hostID: string='';
@@ -24,7 +24,10 @@ export class AppComponent implements OnInit, OnDestroy {
   discoveredPeers: PeerMessage[] = [];
   connectedPeers: PeerMessage[] = [];
 
-  constructor(private webSocketService: WebSocketService, private fileTransferService : FileTransferService, private fileSendService: FileSendService,private hostService :HostService) {}
+  constructor(private webSocketService: WebSocketService,
+              private fileTransferService : FileTransferService,
+              private fileSendService: FileSendService,
+              private hostService :HostService) {}
 
   ngOnInit(): void {
     this.messagesSubscription = this.webSocketService.messages$.subscribe(
@@ -55,17 +58,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private updateDiscoveredPeers(peer: PeerMessage): void {
-    // Optionally, check if the peer is already in the list to avoid duplicates
     if (!this.discoveredPeers.some(p => p.peerId === peer.peerId)) {
       this.discoveredPeers.push(peer);
     }
   }
 
   private updateConnectedPeers(peer: PeerMessage): void {
-    // Add to connected peers, possibly removing from discovered if necessary
     if (!this.connectedPeers.some(p => p.peerId === peer.peerId)) {
       this.connectedPeers.push(peer);
-      // Optionally, remove from discovered
       this.discoveredPeers = this.discoveredPeers.filter(p => p.peerId !== peer.peerId);
     }
   }
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.messagesSubscription.unsubscribe();
     if (this.fileSubscription) {
-      this.fileSubscription.unsubscribe();  // Ensure to unsubscribe to avoid memory leaks
+      this.fileSubscription.unsubscribe();
     }
   }
 
@@ -81,12 +81,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.selectedFile = file;
   }
 
-  downloadFile(): void {
-    if (this.selectedFile) {
-      console.log('Downloading:', this.selectedFile.name);
-      // Implement file download logic here
-    }
-  }
   sendFileName(): void {
     if (this.selectedFile) {
       this.fileSendService.requestFile(this.selectedFile.name).subscribe({
@@ -103,7 +97,6 @@ export class AppComponent implements OnInit, OnDestroy {
       alert('No file selected');
     }
   }
-
 }
 
 interface PeerMessage {
